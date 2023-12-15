@@ -1,6 +1,18 @@
 # Astro Devcontainer Example
 
-This is an example project that illustrates how to use the base images provided by Astronomer in order to leverage local devcontainers for development rather than the Astro CLI (specifically, the `astro dev` sub-commands). Reasons you might want to do this are outlined below.
+This is an example project that illustrates how to use the base images provided by Astronomer in order to leverage local [devcontainers for development](https://containers.dev) rather than the Astro CLI (specifically, the `astro dev` sub-commands).
+
+## How to Use
+
+1. Clone this repo
+2. Use the command palette in VSCode to open the project in a devcontainer (the `Open Folder in Container` option)
+3. After `postCreate` is finished running, run `honcho start` in the terminal, which will start the airflow webserver, scheduler, and triggerer.
+
+**Note:** postgres is running on 5436 to avoid conflicting with the default 5433 that the Astro CLI (`astro dev`) uses. The webserver is running on 8082 for similar reasons.
+
+### Honcho
+
+[Honcho](https://github.com/nickstenning/honcho) is a Procfile runner written in Python. It uses the Procfile format, [which is used by Heroku](https://devcenter.heroku.com/articles/procfile) and others.
 
 ## Why Use Devcontainers vs `astro dev`?
 

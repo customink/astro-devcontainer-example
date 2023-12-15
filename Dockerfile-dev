@@ -1,0 +1,18 @@
+FROM quay.io/astronomer/astro-runtime:9.6.0-base
+
+USER root
+
+RUN chsh --shell /bin/bash astro
+
+# Run updates/upgrades
+RUN apt-get clean -y \
+    && apt-get update -y \
+    && apt-get upgrade -y
+
+RUN curl -sSL install.astronomer.io | bash -s
+
+# libpq-dev is required for psycopg2 to build on ARM for some reason:
+# https://stackoverflow.com/questions/61528483/error-pg-config-executable-not-found-i-try-to-pip3-psycopg2-with-python3-7
+RUN apt-get install -y build-essential libpq-dev pkg-config
+
+USER astro

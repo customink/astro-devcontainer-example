@@ -1,0 +1,53 @@
+# https://github.com/astronomer/astro-cli/blob/v1.20.0/airflow/include/composeyml.yml
+version: '3.4'
+
+x-common-env-vars: &common-env-vars
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://postgres:postgres@postgres:5436
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql://postgres:postgres@postgres:5436
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  AIRFLOW__CORE__FERNET_KEY: "d6Vefz3G9U_ynXB3cr7y_Ak35tAHkEGAVxuz_B-jzWw="
+  AIRFLOW__WEBSERVER__SECRET_KEY: "astro-example"
+  AIRFLOW__WEBSERVER__RBAC: "True"
+  AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "True"
+  AIRFLOW__WEBSERVER__WORKERS: 1
+  ASTRONOMER_ENVIRONMENT: local
+  AIRFLOW__SCHEDULER__PARSING_PROCESSES: 1
+  AIRFLOW__CORE__WORKER_CONCURRENCY: 4
+  AIRFLOW__WEBSERVER__SHOW_TRIGGER_FORM_IF_NO_PARAMS: "True"
+  # If we don't do this then we cannot access the webserver as
+  # it expects localhost, but we're proxied through Codespaces
+  # https://github.com/wtforms/flask-wtf/blob/4b90067908f0ab42bf25f4bc580a4367e09e27dd/src/flask_wtf/csrf.py#L272-L273
+  WTF_CSRF_SSL_STRICT: "False"
+
+services:
+  astro-example:
+    build: { context: ., dockerfile: Dockerfile-dev }
+    command: sleep infinity
+    environment: *common-env-vars
+    depends_on:
+      - postgres
+    env_file: .env
+    privileged: true
+    user: astro
+
+  postgres:
+    command: -p 5436
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    image: postgres:12.6
+    labels:
+      io.astronomer.docker: "true"
+      io.astronomer.docker.cli: "true"
+    ports:
+      - 127.0.0.1:5436:5436
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    driver: local
+  airflow_logs:
+    driver: local

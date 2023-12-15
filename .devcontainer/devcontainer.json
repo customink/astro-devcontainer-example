@@ -1,0 +1,37 @@
+// For format details, see https://containers.dev/implementors/json_reference/. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+    "name": "astro-example",
+    "dockerComposeFile": "../docker-compose-dev.yml",
+    "features": {
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        "ghcr.io/devcontainers/features/common-utils": {
+            "upgradePackages": false,
+            "username": "astro"
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:latest": {}
+    },
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.isort",
+                "ms-python.black-formatter"
+            ]
+        }
+    },
+    "service": "astro-example",
+    "postCreateCommand": "./.devcontainer/postCreate",
+    "remoteUser": "astro",
+    "workspaceFolder": "/usr/local/airflow",
+    "mounts": [
+        // Mounting the local .aws folder into the container allows you to use
+        // AWS credentials stored on the host machine. A similar pattern would
+        // work for other credential stores.
+        "source=${localEnv:HOME}/.aws,target=/home/astro/.aws,type=bind",
+        "source=${localEnv:HOME}/.astro,target=/home/astro/.astro,type=bind",
+        "source=${localWorkspaceFolder},target=/usr/local/airflow,type=bind,consistency=cached"
+    ]
+}

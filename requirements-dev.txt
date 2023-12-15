@@ -1,0 +1,8 @@
+# Development / Testing
+black
+ipython
+isort
+pytest
+pyupgrade
+flake8
+sqlfluff

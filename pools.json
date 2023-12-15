@@ -1,0 +1,6 @@
+{
+    "astro-example-pool": {
+        "description": "This is an example pool",
+        "slots": 5
+    }
+}

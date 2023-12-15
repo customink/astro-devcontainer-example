@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+# We need to update the permissions on /tmp for some reason or the ssh feature
+# will fail to start the ssh-agent and add the ssh key.
+sudo chmod 1777 /tmp
+
+if grep -Eqx 'apache-airflow\\s*[=~>]{1,2}.*' requirements.txt; then
+    echo >&2 \"Do not upgrade by specifying 'apache-airflow' in your requirements.txt, change the base image instead!\";
+    exit 1;
+fi;
+
+pip install -r requirements.txt -r requirements-dev.txt honcho
+
+# cp -rf ./.devcontainer/templates/webserver_config.py /usr/local/airflow/
+
+if [ -z "$AIRFLOW__API__AUTH_BACKENDS" ] && [ "$(find $(python -c 'import site; print(site.getsitepackages()[0])')/airflow -name 'basic_auth.py')" ]; then
+    export AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth;
+else
+    export AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.default;
+fi
+
+airflow db upgrade
+# Import pools that are maintained in a pools.json file based on:
+# `airflow pools export pools.json`
+airflow pools import pools.json
+airflow sync-perm
+
+if [ "$(PGPASSWORD=postgres psql -hpostgres -Upostgres -p 5436 -c 'select username from ab_user' --csv | tail -n 1)" != "admin" ]; then
+    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p admin
+fi

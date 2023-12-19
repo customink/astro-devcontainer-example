@@ -20,7 +20,7 @@ For users of the Astronomer platform the default method of working with a local 
 
 ### 1. `astro dev start` always rebuilds the container
 
-This is due to the base images (i.e. `quay.io/astronomer/astro-runtime:9.6.0``) using the `ONBUILD` instruction of Docker. Here is a snippet of [the Docker docs about `ONBUILD`](https://docs.docker.com/engine/reference/builder/#onbuild):
+This is due to the base images (i.e. `quay.io/astronomer/astro-runtime:9.6.0`) using the `ONBUILD` instruction of Docker. Here is a snippet of [the Docker docs about `ONBUILD`](https://docs.docker.com/engine/reference/builder/#onbuild):
 
 > The ONBUILD instruction adds to the image a trigger instruction to be executed at a later time, when the image is used as the base for another build. The trigger will be executed in the context of the downstream build, as if it had been inserted immediately after the FROM instruction in the downstream Dockerfile.
 
